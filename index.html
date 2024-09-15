@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        :root {
+            --rosewater: #f5e0dc;
+            --flamingo: #f2cdcd;
+            --pink: #f5c2e7;
+            --mauve: #cba6f7;
+            --red: #f38ba8;
+            --maroon: #eba0ac;
+            --peach: #fab387;
+            --yellow: #f9e2af;
+            --green: #a6e3a1;
+            --teal: #94e2d5;
+            --sky: #89dceb;
+            --sapphire: #74c7ec;
+            --blue: #89b4fa;
+            --lavender: #b4befe;
+            --text: #cdd6f4;
+            --subtext1: #bac2de;
+            --subtext0: #a6adc8;
+            --overlay2: #9399b2;
+            --overlay1: #7f849c;
+            --overlay0: #6c7086;
+            --surface2: #585b70;
+            --surface1: #45475a;
+            --surface0: #313244;
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --crust: #11111b;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--base);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--surface0);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--blue);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            background-color: var(--surface1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .summary-item h3 {
+            margin: 0;
+            color: var(--sapphire);
+        }
+
+        .summary-item p {
+            margin: 5px 0 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .expense-list {
+            margin-top: 20px;
+        }
+
+        .expense-item {
+            background-color: var(--surface1);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expense-item .category {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        .add-expense {
+            background-color: var(--green);
+            color: var(--base);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.1s;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .add-expense:hover {
+            background-color: var(--teal);
+        }
+
+        .add-expense:active {
+            transform: scale(0.98);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--surface0);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: var(--overlay0);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--text);
+        }
+
+        input, select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid var(--surface2);
+            background-color: var(--surface1);
+            color: var(--text);
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--blue);
+            color: var(--base);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--sapphire);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 600px) {
+            .summary {
+                flex-direction: column;
+            }
+
+            .summary-item {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="welcome">Welcome!</h1>
+        <div class="summary">
+            <div class="summary-item">
+                <h3>Today's Expenses</h3>
+                <p id="today-total">$0</p>
+            </div>
+            <div class="summary-item">
+                <h3>This Month's Expenses</h3>
+                <p id="month-total">$0</p>
+            </div>
+        </div>
+        <div class="expense-list" id="expense-list"></div>
+    </div>
+    <button class="add-expense" id="add-expense-btn">Add Expense</button>
+
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Expense</h2>
+            <input type="text" id="expense-name" placeholder="Expense Name">
+            <input type="number" id="expense-amount" placeholder="Amount">
+            <input type="text" id="expense-category" placeholder="Category (emoji or text)">
+            <button id="save-expense">Save Expense</button>
+        </div>
+    </div>
+
+    <script>
+        let username = localStorage.getItem('username');
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        function init() {
+            if (!username) {
+                username = prompt("Welcome! What's your name?");
+                localStorage.setItem('username', username);
+            }
+            document.getElementById('welcome').textContent = `Welcome, ${username}!`;
+            updateExpenseList();
+            updateSummary();
+        }
+
+        function updateExpenseList() {
+            const list = document.getElementById('expense-list');
+            list.innerHTML = '';
+            expenses.slice(-10).forEach(expense => {
+                const item = document.createElement('div');
+                item.className = 'expense-item';
+                item.innerHTML = `
+                    <span class="category">${expense.category}</span>
+                    <span>${expense.name}</span>
+                    <span>$${expense.amount}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function updateSummary() {
+            const today = new Date().toDateString();
+            const thisMonth = new Date().getMonth();
+            const todayTotal = expenses.filter(e => new Date(e.date).toDateString() === today).reduce((sum, e) => sum + e.amount, 0);
+            const monthTotal = expenses.filter(e => new Date(e.date).getMonth() === thisMonth).reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('today-total').textContent = `$${todayTotal.toFixed(2)}`;
+            document.getElementById('month-total').textContent = `$${monthTotal.toFixed(2)}`;
+        }
+
+        document.getElementById('add-expense-btn').onclick = function() {
+            document.getElementById('expense-modal').style.display = 'flex';
+        }
+
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('expense-modal').style.display = 'none';
+        }
+
+        document.getElementById('save-expense').onclick = function() {
+            const name = document.getElementById('expense-name').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const category = document.getElementById('expense-category').value;
+            if (name && amount && category) {
+                expenses.push({ name, amount, category, date: new Date().toISOString() });
+                localStorage.setItem('expenses', JSON.stringify(expenses));
+                updateExpenseList();
+                updateSummary();
+                document.getElementById('expense-modal').style.display = 'none';
+                document.getElementById('expense-name').value = '';
+                document.getElementById('expense-amount').value = '';
+                document.getElementById('expense-category').value = '';
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('expense-modal')) {
+                document.getElementById('expense-modal').style.display = 'none';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
